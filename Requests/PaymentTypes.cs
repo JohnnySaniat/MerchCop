@@ -4,7 +4,22 @@
     {
         public static void Map(WebApplication app)
         {
-            //code goes here
+            app.MapGet("/payment-types", (MerchCopDbContext db) =>
+            {
+                return db.PaymentTypes.ToList();
+            });
+
+            app.MapGet("/payment-types/{paymentTypeId}", (int paymentTypeId, MerchCopDbContext db) =>
+            {
+                var paymentType = db.PaymentTypes.Find(paymentTypeId);
+
+                if (paymentType == null)
+                {
+                    return Results.NotFound();
+                }
+
+                return Results.Ok(paymentType);
+            });
 
         }
 
