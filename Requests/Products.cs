@@ -36,7 +36,7 @@ namespace MerchCop.Requests
                 db.Products.Remove(product);
                 db.SaveChanges();
 
-                return Results.Ok();
+                return Results.Ok("Product not found.");
             });
 
             app.MapPut("/products/{productId}", async (int productId, Product updatedProduct, MerchCopDbContext db) =>
@@ -51,16 +51,18 @@ namespace MerchCop.Requests
                 product.ProductName = updatedProduct.ProductName;
                 product.TypeId = updatedProduct.TypeId;
                 product.Price = updatedProduct.Price;
-                product.SellerId = updatedProduct.SellerId;
+                product.CollaboratorId = updatedProduct.CollaboratorId;
+                product.Image = updatedProduct.Image;
+                product.IsStaging = updatedProduct.IsStaging;
                 product.IsSolvedText = updatedProduct.IsSolvedText;
                 product.IsSolvedMathRandom = updatedProduct.IsSolvedMathRandom;
                 product.IsSolvedArtistChallenge = updatedProduct.IsSolvedArtistChallenge;
-
                 db.Products.Update(product);
                 await db.SaveChangesAsync();
 
                 return Results.Ok(product);
             });
+
 
             app.MapPost("/products", async (Product newProduct, MerchCopDbContext db) =>
             {
@@ -136,21 +138,6 @@ namespace MerchCop.Requests
                 await db.SaveChangesAsync();
 
                 return Results.Ok(product);
-            });
-
-            app.MapGet("/products/user/{sellerId}", async (int sellerId, MerchCopDbContext db) =>
-            {
-                var products = await db.Products
-                    .Include(p => p.Seller)
-                    .Where(p => p.SellerId == sellerId)
-                    .ToListAsync();
-
-                if (products == null || !products.Any())
-                {
-                    return Results.NotFound();
-                }
-
-                return Results.Ok(products);
             });
 
         }
