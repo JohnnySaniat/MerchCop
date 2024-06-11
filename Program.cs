@@ -48,11 +48,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-PaymentTypes.Map(app);
 Orders.Map(app);
 Users.Map(app);
 Products.Map(app);
 ProductTypes.Map(app);
+Collaborators.Map(app);
 
 app.Run();
 

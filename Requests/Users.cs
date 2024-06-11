@@ -30,12 +30,12 @@ namespace MerchCop.Requests
                 return Results.Created($"/user/{user.Id}", user);
             });
 
-            app.MapGet("/users/{id}", (MerchCopDbContext db, int id) =>
+            app.MapGet("/users/{uid}", (MerchCopDbContext db, string uid) =>
             {
                 return db.Users
                     .Include(u => u.Orders)
                         .ThenInclude(o => o.Products)
-                    .FirstOrDefault(u => u.Id == id);
+                    .FirstOrDefault(u => u.Uid == uid);
             });
 
             app.MapPatch("users/{id}", (MerchCopDbContext db, int id, User user) =>
@@ -88,6 +88,15 @@ namespace MerchCop.Requests
 
                 return Results.Ok(user);
             });
+
+            app.MapGet("/users", (MerchCopDbContext db) =>
+            {
+                return db.Users
+                    .Include(u => u.Orders)
+                        .ThenInclude(o => o.Products)
+                    .ToList();
+            });
+
 
         }
     }

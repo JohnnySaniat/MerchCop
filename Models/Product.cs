@@ -6,7 +6,9 @@
         public string ProductName { get; set; }
         public int TypeId { get; set; }
         public decimal Price { get; set; }
-        public int SellerId { get; set; }
+        public int CollaboratorId { get; set; }
+
+        public string Image {  get; set; }
 
         public bool IsStaging { get; set; }
         public bool IsSolvedText { get; set; }
@@ -14,7 +16,6 @@
         public bool IsSolvedArtistChallenge { get; set; }
 
         public ICollection<Order> Orders { get; set; }
-
-        public User Seller { get; set; }
+        
     }
 }

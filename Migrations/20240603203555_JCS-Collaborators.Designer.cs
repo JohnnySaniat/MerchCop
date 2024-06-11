@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MerchCop.Migrations
 {
     [DbContext(typeof(MerchCopDbContext))]
-    [Migration("20240521142353_JCS-NewData2")]
-    partial class JCSNewData2
+    [Migration("20240603203555_JCS-Collaborators")]
+    partial class JCSCollaborators
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,71 @@ namespace MerchCop.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("MerchCop.Models.Collaborator", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdditionalLink")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Charity")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Instagram")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Testimony")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Collaborators");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AdditionalLink = "https://example.com",
+                            Charity = "Charity1",
+                            Image = "https://example.com/john.jpg",
+                            Instagram = "@johndoe",
+                            Name = "John Doe",
+                            Testimony = "Great collaborator!",
+                            Website = "https://johndoe.com"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AdditionalLink = "https://example.com",
+                            Charity = "Charity2",
+                            Image = "https://example.com/jane.jpg",
+                            Instagram = "@janesmith",
+                            Name = "Jane Smith",
+                            Testimony = "Wonderful work!",
+                            Website = "https://janesmith.com"
+                        });
+                });
 
             modelBuilder.Entity("MerchCop.Models.Order", b =>
                 {
@@ -35,21 +100,22 @@ namespace MerchCop.Migrations
                     b.Property<bool>("IsComplete")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("PaymentTypeId")
+                    b.Property<string>("PaymentType")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ProductTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("ProductTypeId")
-                        .HasColumnType("integer");
+                    b.Property<decimal?>("Total")
+                        .HasColumnType("numeric");
 
-                    b.Property<int>("SellerId")
-                        .HasColumnType("integer");
+                    b.Property<decimal?>("TotalWithTax")
+                        .HasColumnType("numeric");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PaymentTypeId");
 
                     b.HasIndex("ProductTypeId");
 
@@ -62,48 +128,19 @@ namespace MerchCop.Migrations
                         {
                             Id = 1,
                             IsComplete = true,
-                            PaymentTypeId = 1,
+                            PaymentType = "Credit",
                             ProductTypeId = 1,
-                            SellerId = 1,
+                            Total = 0m,
                             UserId = 1
                         },
                         new
                         {
                             Id = 2,
                             IsComplete = false,
-                            PaymentTypeId = 2,
-                            ProductTypeId = 1,
-                            SellerId = 2,
+                            PaymentType = "Debit",
+                            ProductTypeId = 2,
+                            Total = 0m,
                             UserId = 2
-                        });
-                });
-
-            modelBuilder.Entity("MerchCop.Models.PaymentType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PaymentTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Category = "Credit"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Category = "Cash"
                         });
                 });
 
@@ -114,6 +151,13 @@ namespace MerchCop.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CollaboratorId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsSolvedArtistChallenge")
                         .HasColumnType("boolean");
@@ -134,13 +178,12 @@ namespace MerchCop.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("SellerId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("TypeId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CollaboratorId");
 
                     b.ToTable("Products");
 
@@ -148,37 +191,40 @@ namespace MerchCop.Migrations
                         new
                         {
                             Id = 1,
+                            CollaboratorId = 1,
+                            Image = "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
                             IsSolvedArtistChallenge = false,
                             IsSolvedMathRandom = false,
                             IsSolvedText = false,
                             IsStaging = true,
                             Price = 100m,
                             ProductName = "Shrugbo",
-                            SellerId = 1,
                             TypeId = 1
                         },
                         new
                         {
                             Id = 2,
+                            CollaboratorId = 1,
+                            Image = "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
                             IsSolvedArtistChallenge = false,
                             IsSolvedMathRandom = false,
                             IsSolvedText = false,
                             IsStaging = false,
                             Price = 150m,
                             ProductName = "Trenboodoo",
-                            SellerId = 1,
                             TypeId = 2
                         },
                         new
                         {
                             Id = 3,
+                            CollaboratorId = 2,
+                            Image = "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
                             IsSolvedArtistChallenge = false,
                             IsSolvedMathRandom = false,
                             IsSolvedText = false,
                             IsStaging = false,
                             Price = 50m,
                             ProductName = "Salad",
-                            SellerId = 2,
                             TypeId = 3
                         });
                 });
@@ -309,25 +355,24 @@ namespace MerchCop.Migrations
 
             modelBuilder.Entity("MerchCop.Models.Order", b =>
                 {
-                    b.HasOne("MerchCop.Models.PaymentType", "PaymentType")
-                        .WithMany()
-                        .HasForeignKey("PaymentTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MerchCop.Models.ProductType", "ProductType")
                         .WithMany()
-                        .HasForeignKey("ProductTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProductTypeId");
 
                     b.HasOne("MerchCop.Models.User", null)
                         .WithMany("Orders")
                         .HasForeignKey("UserId");
 
-                    b.Navigation("PaymentType");
-
                     b.Navigation("ProductType");
+                });
+
+            modelBuilder.Entity("MerchCop.Models.Product", b =>
+                {
+                    b.HasOne("MerchCop.Models.Collaborator", null)
+                        .WithMany("Products")
+                        .HasForeignKey("CollaboratorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("OrderProduct", b =>
@@ -343,6 +388,11 @@ namespace MerchCop.Migrations
                         .HasForeignKey("ProductsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MerchCop.Models.Collaborator", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("MerchCop.Models.User", b =>
